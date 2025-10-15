@@ -1,8 +1,26 @@
+/* Alap stílusok minden képernyőre */
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+  background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+  text-align: center;
+}
+
 .title {
   font-family: Impact, Haettenschweiler, sans-serif;
   font-size: clamp(2rem, 6vw, 4rem);
-  text-align: center;
   margin: 1rem 0;
+}
+
+#mainDiv {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  color: #333;
+  margin-bottom: 1rem;
 }
 
 .imageButton {
@@ -10,18 +28,27 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 80vw;
-  max-width: 200px;
-  aspect-ratio: 3 / 4;
+  width: 50vw;       /* mindig a képernyő szélességének 50%-a */
+  aspect-ratio: 3 / 4; /* a magasság automatikusan arányos */
   border: none;
   cursor: pointer;
   display: block;
   margin: 0 auto;
+  transition: transform 0.2s ease;
 }
 
-ul {
-  list-style-position: inside;
-  text-align: center;
-  margin: 1rem auto;
-  padding: 0;
+.imageButton:hover {
+  transform: scale(1.05);
+}
+
+/* Nagyobb képernyőkön (pl. laptop, monitor) */
+@media (min-width: 768px) {
+  .imageButton {
+    width: 20vw;  /* kisebb arány, mert nagy képernyőn elég */
+    max-width: 200px;
+  }
+
+  #mainDiv {
+    font-size: 1.5rem;
+  }
 }
