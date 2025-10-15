@@ -1,13 +1,32 @@
 .title {
-    font-family: Impact, Haettenschweiler;
-    font-size: 500%;
+  font-family: Impact, Haettenschweiler, sans-serif;
+  font-size: clamp(2rem, 6vw, 4rem);
+  text-align: center;
+  margin: 1rem 0;
 }
+
 .imageButton {
   background-image: url("./Balint.png");
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
-  width: 150px;
-  height: 200px;
+  background-position: center;
+  width: 50vw;
+  max-width: 200px;
+  aspect-ratio: 3 / 4;
   border: none;
   cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Nagyobb képernyőkre (pl. laptop, monitor) */
+@media (min-width: 768px) {
+  .title {
+    font-size: clamp(2.5rem, 4vw, 5rem);
+  }
+
+  .imageButton {
+    width: 150px;
+    height: 200px;
+  }
 }
