@@ -10,7 +10,7 @@
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  width: 50vw;
+  width: 80vw;
   max-width: 200px;
   aspect-ratio: 3 / 4;
   border: none;
@@ -19,14 +19,9 @@
   margin: 0 auto;
 }
 
-/* Nagyobb képernyőkre (pl. laptop, monitor) */
-@media (min-width: 768px) {
-  .title {
-    font-size: clamp(2.5rem, 4vw, 5rem);
-  }
-
-  .imageButton {
-    width: 150px;
-    height: 200px;
-  }
+ul {
+  list-style-position: inside;
+  text-align: center;
+  margin: 1rem auto;
+  padding: 0;
 }
