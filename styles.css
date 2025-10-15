@@ -2,7 +2,7 @@
     font-family: Impact, Haettenschweiler 
 }
 .imageButton {
-  background-image: url("Balint.png");
+  background-image: url("./Balint.png");
   background-size: cover;
   background-repeat: no-repeat;
   width: 150px;
