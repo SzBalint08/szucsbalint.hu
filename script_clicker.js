@@ -1,4 +1,9 @@
-/* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+let numButtonClicks = 0;
+function buttonClicked() {
+    numButtonClicks = numButtonClicks + 1;
+    document.getElementById("mainDiv").textContent =
+        "Pontok: " + numButtonClicks;
+}
 function myFunction() {
     var x = document.getElementById("myTopnav");
     if (x.className === "topnav") {

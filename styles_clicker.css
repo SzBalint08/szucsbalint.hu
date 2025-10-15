@@ -21,6 +21,20 @@ body {
   margin-bottom: 1rem;
 }
 
+.imageButton {
+  background-image: url("./Balint.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 50vw;       /* mindig a képernyő szélességének 50%-a */
+  aspect-ratio: 3 / 4; /* a magasság automatikusan arányos */
+  border: none;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+  transition: transform 0.2s ease;
+}
+
 .imageButton:hover {
   transform: scale(1.05);
 }
