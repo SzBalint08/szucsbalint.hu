@@ -6,7 +6,6 @@ window.onload = function() {
   if (savedpts) {
     pts = parseInt(savedpts);
   }
-  frissitPont();
 };
 
 function buttonClicked() {
