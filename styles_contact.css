@@ -81,7 +81,6 @@ body {
 
 .socials {
   display: flex;               /* egymás mellé helyezi az elemeket */
-
   flex-wrap: wrap;             /* ha kicsi a képernyő, átsorolja */
   gap: 10px;                   /* távolság az ikonok között */
 }
