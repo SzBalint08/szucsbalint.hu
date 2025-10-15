@@ -16,7 +16,7 @@ function buttonClicked() {
 }
 
 function frissitPont() {
-  document.getElementById("mainDiv").innerText = "pts: " + pts;
+  document.getElementById("mainDiv").innerText = "Pontok: " + pts;
 }
 
 function myFunction() {
