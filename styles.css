@@ -1,5 +1,6 @@
 .title {
-    font-family: Impact, Haettenschweiler 
+    font-family: Impact, Haettenschweiler;
+    font-size: 20pt;
 }
 .imageButton {
   background-image: url("./Balint.png");
