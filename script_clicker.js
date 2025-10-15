@@ -4,7 +4,7 @@ let pts = 0;
 window.onload = function() {
   const savedpts = localStorage.getItem("pts");
   if (savedpts) {
-    pont = parseInt(savedpts);
+    pts = parseInt(savedpts);
   }
   frissitPont();
 };
@@ -18,6 +18,7 @@ function buttonClicked() {
 function frissitPont() {
   document.getElementById("mainDiv").innerText = "pts: " + pts;
 }
+
 function myFunction() {
     var x = document.getElementById("myTopnav");
     if (x.className === "topnav") {
