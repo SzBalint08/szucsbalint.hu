@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bálint Spillemaskine</title>
+    <link rel="stylesheet" href="styles_slot.css" />
+    <script src="script_DK_slot.js" defer></script>
+  </head>
+  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="topnav" id="myTopnav">
+      <a href="DK_index.html">Hjem</a>
+      <a href="DK_blog.html">Blog</a>
+      <a href="DK_contact.html">Kontakt</a>
+      <a href="DK_games.html" class="active">Spil</a>
+      <a href="DK_majom.html">Patrik</a>
+      <a class="flags" href="HU_slot.html"><img src="https://flagicons.lipis.dev/flags/4x3/hu.svg"></a> 
+      <a class="flags" href="EN_slot.html"><img src="https://flagicons.lipis.dev/flags/4x3/gb.svg"></a>   
+      <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+      </a>
+    </div>
+
+    <div class="slot-container">
+      <h1 class="title">Bálint Spillemaskine</h1>
+      <p id="pointsDisplay">Bálint mønter: 0</p>
+
+      <div class="bet-section">
+        <label for="betAmount">Indsats:</label>
+        <input type="number" id="betAmount" min="1" value="10" />
+      </div>
+
+      <div class="slot-machine">
+        <div class="reel" id="reel1"><img src="img/balint1.png" alt=""></div>
+        <div class="reel" id="reel2"><img src="img/balint2.png" alt=""></div>
+        <div class="reel" id="reel3"><img src="img/balint3.png" alt=""></div>
+      </div>
+
+      <button id="spinBtn">Drej! (10 B.m.)</button>
+      <p id="resultText"></p>
+    </div>
+  </body>
+</html>

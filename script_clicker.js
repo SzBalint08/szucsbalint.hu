@@ -15,7 +15,7 @@ function buttonClicked() {
 }
 
 function frissitPont() {
-  document.getElementById("mainDiv").innerText = "Pontok: " + pts;
+  document.getElementById("mainDiv").innerText = "Bálint érmék: " + pts;
 }
 
 function myFunction() {

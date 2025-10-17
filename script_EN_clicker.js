@@ -15,7 +15,7 @@ function buttonClicked() {
 }
 
 function frissitPont() {
-  document.getElementById("mainDiv").innerText = "Points: " + pts;
+  document.getElementById("mainDiv").innerText = "Bálint coins: " + pts;
 }
 
 function myFunction() {

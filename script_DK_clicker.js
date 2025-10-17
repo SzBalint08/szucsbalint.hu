@@ -15,7 +15,7 @@ function buttonClicked() {
 }
 
 function frissitPont() {
-  document.getElementById("mainDiv").innerText = "Point: " + pts;
+  document.getElementById("mainDiv").innerText = "Bálint mønter: " + pts;
 }
 
 function myFunction() {

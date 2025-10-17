@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bálint Slot Machine</title>
+    <link rel="stylesheet" href="styles_slot.css" />
+    <script src="script_HU_slot.js" defer></script>
+  </head>
+  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="topnav" id="myTopnav">
+    <a href="index.html">Kezdőlap</a>
+    <a href="HU_blog.html">Blog</a>
+    <a href="HU_contact.html">Kontakt</a>
+    <a href="HU_games.html" class="active">Játékok</a>
+    <a href="HU_majom.html">Patrik</a>
+    <a class="flags" href="EN_slot.html"><img src="https://flagicons.lipis.dev/flags/4x3/gb.svg"></a> 
+    <a class="flags" href="DK_slot.html"><img src="https://flagicons.lipis.dev/flags/4x3/dk.svg"></a>   
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+        <i class="fa fa-bars"></i>
+    </a>
+    </div>
+    <div class="slot-container">
+      <h1 class="title">Bálint Slot Machine</h1>
+      <p id="pointsDisplay">Bálint érmék: 0</p>
+
+      <div class="bet-section">
+        <label for="betAmount">Tét:</label>
+        <input type="number" id="betAmount" min="1" value="10" />
+      </div>
+
+      <div class="slot-machine">
+        <div class="reel" id="reel1"><img src="img/balint1.png" alt=""></div>
+        <div class="reel" id="reel2"><img src="img/balint2.png" alt=""></div>
+        <div class="reel" id="reel3"><img src="img/balint3.png" alt=""></div>
+      </div>
+
+      <button id="spinBtn">Pörgesd meg! (10 B.é.)</button>
+      <p id="resultText"></p>
+    </div>
+  </body>
+</html>
