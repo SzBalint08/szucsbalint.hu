@@ -1,32 +1,28 @@
 {
-    "hu": [
+    "posts": [
+      {
+        "date": "2025.10.17",
+        "content": {
+            "hu": "Ma hajnalban részegen megnéztem a Kicsi kocsi: Tele a tank! című film első felét, de aztán elaludtam. Aztán reggel, amikor befejeztem már kicsit gagyibbnak tűntek az effektek, de attól még 3.5/5 csillag, és a legjobb előzések vannak benne az előzések történelméből",
+            "en": "Early this morning I watched the first half of the movie 'Little Car: Full Tank!' while drunk, but then I fell asleep. Later in the morning, when I finished it, the effects seemed a bit worse, but still 3.5/5 stars, and it contains the best overtakes in the history of overtakes.",
+            "dk": "Tidligt i morges så jeg den første halvdel af filmen 'Lille Bil: Fuld Tank!' mens jeg var beruset, men så faldt jeg i søvn. Senere om morgenen, da jeg så den færdig, virkede effekterne lidt dårligere, men stadig 3,5/5 stjerner, og den indeholder de bedste forløbere i forløbernes historie."
+        }
+      },        
       {
         "date": "2025.10.16",
-        "content": "Csütörtök este van, irány a Heidi's"
+        "content": {
+          "hu": "Csütörtök este van, irány a Heidi's",
+          "en": "Thursday evening, heading to Heidi's",
+          "dk": "Torsdag aften, på vej til Heidi's"
+        }
       },
       {
         "date": "2025.10.15",
-        "content": "Elindítottam a weboldalt"
-      }
-    ],
-    "en": [
-      {
-        "date": "2025.10.16",
-        "content": "Thursday evening, heading to Heidi's"
-      },
-      {
-        "date": "2025.10.15",
-        "content": "Launched the website"
-      }
-    ],
-    "dk": [
-      {
-        "date": "2025.10.16",
-        "content": "Torsdag aften, på vej til Heidi's"
-      },
-      {
-        "date": "2025.10.15",
-        "content": "Jeg lancerede hjemmesiden"
+        "content": {
+          "hu": "Elindítottam a weboldalt",
+          "en": "Launched the website",
+          "dk": "Jeg lancerede hjemmesiden"
+        }
       }
     ]
   }

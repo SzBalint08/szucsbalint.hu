@@ -7,16 +7,13 @@ function myFunction() {
   }
 }
 
-// Blog betöltése JSON-ból
 fetch('blog.json')
   .then(response => response.json())
   .then(data => {
-    // Az oldal nyelvének meghatározása
     const lang = document.documentElement.lang || 'hu';
-    const blogPosts = data[lang];
-
     const container = document.getElementById('blogContainer');
-    blogPosts.forEach(post => {
+
+    data.posts.forEach(post => {
       const postDiv = document.createElement('div');
       postDiv.className = 'blogPost';
 
@@ -26,7 +23,7 @@ fetch('blog.json')
 
       const contentDiv = document.createElement('div');
       contentDiv.className = 'postContent';
-      contentDiv.textContent = post.content;
+      contentDiv.textContent = post.content[lang];
 
       postDiv.appendChild(dateDiv);
       postDiv.appendChild(contentDiv);
