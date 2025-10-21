@@ -19,122 +19,162 @@ const firebaseConfig = {
   measurementId: "G-F5GPHLJS9Y"
 };
 firebase.initializeApp(firebaseConfig);
-  
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-  
-  // Elemeink
-  const toggleLoginBtn = document.getElementById("toggleLoginBtn");
-  const authPanel = document.getElementById("authPanel");
-  const email = document.getElementById("email");
-  const password = document.getElementById("password");
-  const username = document.getElementById("username");
-  const loginBtn = document.getElementById("loginBtn");
-  const registerToggleBtn = document.getElementById("registerToggleBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const postPanel = document.getElementById("postPanel");
-  const message = document.getElementById("message");
-  const postBtn = document.getElementById("postBtn");
-  const postsContainer = document.getElementById("postsContainer");
-  
-  // Panel megjelenítése
-  let registerMode = false;
-  toggleLoginBtn.onclick = () => {
-    authPanel.style.display = authPanel.style.display === "none" || authPanel.style.display === "" ? "block" : "none";
-    toggleLoginBtn.textContent = authPanel.style.display === "block" ? "Bezárás" : "Bejelentkezés";
-  };
-  
-  // Regisztráció mód
-  registerToggleBtn.onclick = () => {
-    registerMode = !registerMode;
-    username.style.display = registerMode ? "block" : "none";
-    loginBtn.textContent = registerMode ? "Regisztráció" : "Bejelentkezés";
-    registerToggleBtn.textContent = registerMode ? "Mégse" : "Regisztráció";
-  };
-  
-  // Bejelentkezés / Regisztráció
-  loginBtn.onclick = async () => {
-    try {
-      if (registerMode) {
-        const userCredential = await auth.createUserWithEmailAndPassword(email.value, password.value);
-        await db.collection("users").doc(userCredential.user.email).set({
-          username: username.value || email.value.split("@")[0],
-          email: email.value,
-          role: "member" // alapértelmezett role
-        });
-        alert("Sikeres regisztráció!");
-      } else {
-        await auth.signInWithEmailAndPassword(email.value, password.value);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
-  
-  // Kijelentkezés
-  logoutBtn.onclick = () => auth.signOut();
-  
-  // Auth figyelése
-  auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      authPanel.style.display = "none";
-      toggleLoginBtn.style.display = "none";
-      logoutBtn.style.display = "block";
-      postPanel.style.display = "block";
-  
-      // Szerepkör lekérdezés
-      const userDoc = await db.collection("users").doc(user.email).get();
-      window.currentRole = userDoc.exists ? userDoc.data().role : "member";
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// --- Elemeink ---
+const toggleLoginBtn = document.getElementById("toggleLoginBtn");
+const authPanel = document.getElementById("authPanel");
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const username = document.getElementById("username");
+const loginBtn = document.getElementById("loginBtn");
+const registerToggleBtn = document.getElementById("registerToggleBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const postPanel = document.getElementById("postPanel");
+const message = document.getElementById("message");
+const postBtn = document.getElementById("postBtn");
+const postsContainer = document.getElementById("postsContainer");
+
+// --- Panel megjelenítése ---
+let registerMode = false;
+toggleLoginBtn.onclick = () => {
+  if (authPanel.style.display === "none" || authPanel.style.display === "") {
+    authPanel.style.display = "block";
+    toggleLoginBtn.textContent = "Bezárás";
+  } else {
+    authPanel.style.display = "none";
+    toggleLoginBtn.textContent = "Bejelentkezés";
+  }
+};
+
+// --- Regisztráció mód kapcsoló ---
+registerToggleBtn.onclick = () => {
+  registerMode = !registerMode;
+  if (registerMode) {
+    username.style.display = "block";
+    loginBtn.textContent = "Regisztráció";
+    registerToggleBtn.textContent = "Mégse";
+  } else {
+    username.style.display = "none";
+    loginBtn.textContent = "Bejelentkezés";
+    registerToggleBtn.textContent = "Regisztráció";
+  }
+};
+
+// --- Bejelentkezés / Regisztráció ---
+loginBtn.onclick = async () => {
+  try {
+    if (registerMode) {
+      const userCredential = await auth.createUserWithEmailAndPassword(email.value, password.value);
+      await db.collection("users").doc(userCredential.user.email).set({
+        username: username.value || email.value.split("@")[0],
+        email: email.value,
+        role: "member" // alapértelmezett regisztrált felhasználó role-ja
+      });
+      alert("Sikeres regisztráció!");
     } else {
-      logoutBtn.style.display = "none";
-      toggleLoginBtn.style.display = "block";
-      postPanel.style.display = "none";
-      window.currentRole = null;
+      await auth.signInWithEmailAndPassword(email.value, password.value);
     }
-  });
-  
-  // Posztolás
-  postBtn.onclick = async () => {
-    const text = message.value.trim();
-    if (!text || !auth.currentUser) return alert("Előbb jelentkezz be!");
-  
-    const userDoc = await db.collection("users").doc(auth.currentUser.email).get();
-    const uname = userDoc.exists ? userDoc.data().username : auth.currentUser.email;
-    const role = userDoc.exists ? userDoc.data().role : "member";
-  
-    await db.collection("posts").add({
-      text,
-      author: uname,
-      role,
+  } catch (err) {
+    alert(err.message);
+  }
+};
+
+// --- Kijelentkezés ---
+logoutBtn.onclick = () => auth.signOut();
+
+// --- Auth állapot figyelése ---
+auth.onAuthStateChanged(async (user) => {
+  if (user) {
+    authPanel.style.display = "none";
+    toggleLoginBtn.style.display = "none";
+    logoutBtn.style.display = "block";
+    postPanel.style.display = "block";
+  } else {
+    logoutBtn.style.display = "none";
+    toggleLoginBtn.style.display = "block";
+    postPanel.style.display = "none";
+  }
+});
+
+// --- Posztolás ---
+postBtn.onclick = async () => {
+  const text = message.value.trim();
+  if (!text) return;
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Előbb jelentkezz be!");
+    return;
+  }
+
+  const userDoc = await db.collection("users").doc(user.email).get();
+  if (!userDoc.exists) {
+    alert("Felhasználó nem található!");
+    return;
+  }
+
+  const userData = userDoc.data();
+
+  if (userData.role === "admin") {
+    // Admin → blogra posztol
+    await db.collection("blogPosts").add({
+      title: userData.username + " – " + new Date().toLocaleDateString("hu-HU"),
+      content: text,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
-    message.value = "";
-  };
-  
-  // Posztok megjelenítése + törlés adminnak
-  db.collection("posts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-    postsContainer.innerHTML = "";
-    snapshot.forEach(doc => {
-      const d = doc.data();
-      const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
-      const div = document.createElement("div");
-      div.className = "blogPost";
-      div.innerHTML = `
+    alert("Blogbejegyzés sikeresen hozzáadva!");
+  } else if (userData.role === "member") {
+    // Member → falra posztol
+    await db.collection("posts").add({
+      text,
+      author: userData.username,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  } else {
+    alert("Ismeretlen szerepkör!");
+  }
+
+  message.value = "";
+};
+
+// --- Posztok megjelenítése ---
+db.collection("posts").orderBy("createdAt", "desc").onSnapshot(async snapshot => {
+  postsContainer.innerHTML = "";
+  const user = auth.currentUser;
+  let role = null;
+  if (user) {
+    const userDoc = await db.collection("users").doc(user.email).get();
+    if (userDoc.exists) role = userDoc.data().role;
+  }
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
+
+    let postHTML = `
+      <div class="blogPost" style="margin-bottom: 20px;">
         <div class="postDate">${d.author} – ${date}</div>
         <div class="postContent">${d.text}</div>
-      `;
-  
-      // Admin törlés gomb
-      if (window.currentRole === "admin") {
-        const delBtn = document.createElement("button");
-        delBtn.textContent = "Törlés";
-        delBtn.onclick = async () => {
-          await db.collection("posts").doc(doc.id).delete();
-        };
-        div.appendChild(delBtn);
+    `;
+
+    if (role === "admin") {
+      postHTML += `<button class="deleteBtn" data-id="${doc.id}">Törlés</button>`;
+    }
+
+    postHTML += `</div>`;
+    postsContainer.innerHTML += postHTML;
+  });
+
+  // törlés gomb működése
+  document.querySelectorAll(".deleteBtn").forEach(btn => {
+    btn.addEventListener("click", async (e) => {
+      const id = e.target.getAttribute("data-id");
+      if (confirm("Biztosan törölni szeretnéd ezt a bejegyzést?")) {
+        await db.collection("posts").doc(id).delete();
       }
-  
-      postsContainer.appendChild(div);
     });
   });
-  
+});
