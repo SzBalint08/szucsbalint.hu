@@ -5,23 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog</title>
     <link rel="stylesheet" href="styles_default.css" />
-    <script src="script_blog.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script defer src="script_blog.js"></script>
   </head>
   <body>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <div class="topnav" id="myTopnav">
       <a href="index.html">Kezdőlap</a>
       <a href="#blog" class="active">Blog</a>
       <a href="HU_contact.html">Kontakt</a>
       <a href="HU_games.html">Játékok</a>
+      <a href="HU_fal.html">Fal</a>
       <a href="HU_majom.html">Patrik</a>
       <a class="flags" href="EN_blog.html"><img src="https://flagicons.lipis.dev/flags/4x3/gb.svg"></a> 
       <a class="flags" href="DK_blog.html"><img src="https://flagicons.lipis.dev/flags/4x3/dk.svg"></a>   
       <a href="javascript:void(0);" class="icon" onclick="myFunction()">
           <i class="fa fa-bars"></i>
       </a>
-      </div>
+    </div>
+
     <h1 class="title">Blog</h1>
-      <div id="blogContainer"></div>
+
+    <!-- Admin panel (csak admin látja) -->
+    <div id="adminPanel" style="display:none;">
+      <h3>Új bejegyzés írása</h3>
+      <input id="title" type="text" placeholder="Cím" />
+      <textarea id="content" rows="5" placeholder="Tartalom..."></textarea>
+      <button id="addPostBtn">Bejegyzés hozzáadása</button>
+    </div>
+
+    <!-- Blog bejegyzések -->
+    <div id="blogContainer"></div>
   </body>
 </html>

@@ -1,3 +1,4 @@
+// --- Mobilmenü ---
 function myFunction() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -7,27 +8,89 @@ function myFunction() {
   }
 }
 
-fetch('blog.json')
-  .then(response => response.json())
-  .then(data => {
-    const lang = document.documentElement.lang || 'hu';
-    const container = document.getElementById('blogContainer');
+// --- Firebase inicializálás ---
+const firebaseConfig = {
+  apiKey: "AIzaSyC5PGp0CIL-NGzv0bh3EEfdr4JjHjBp4FE",
+  authDomain: "szucsbalinthu.firebaseapp.com",
+  projectId: "szucsbalinthu",
+  storageBucket: "szucsbalinthu.firebasestorage.app",
+  messagingSenderId: "226319656079",
+  appId: "1:226319656079:web:d86b6062d0fd4b6499bcfa",
+  measurementId: "G-F5GPHLJS9Y"
+};
+firebase.initializeApp(firebaseConfig);
 
-    data.posts.forEach(post => {
-      const postDiv = document.createElement('div');
-      postDiv.className = 'blogPost';
+const auth = firebase.auth();
+const db = firebase.firestore();
 
-      const dateDiv = document.createElement('div');
-      dateDiv.className = 'postDate';
-      dateDiv.textContent = post.date;
+const adminPanel = document.getElementById("adminPanel");
+const titleInput = document.getElementById("title");
+const contentInput = document.getElementById("content");
+const addPostBtn = document.getElementById("addPostBtn");
+const blogContainer = document.getElementById("blogContainer");
 
-      const contentDiv = document.createElement('div');
-      contentDiv.className = 'postContent';
-      contentDiv.textContent = post.content[lang];
+// --- Admin bejelentkezés kezelése role alapján ---
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    const userDoc = await db.collection("users").doc(user.email).get();
+    if (userDoc.exists && userDoc.data().role === "admin") {
+      adminPanel.style.display = "block";
+    } else {
+      adminPanel.style.display = "none";
+    }
+  } else {
+    adminPanel.style.display = "none";
+  }
+});
 
-      postDiv.appendChild(dateDiv);
-      postDiv.appendChild(contentDiv);
-      container.appendChild(postDiv);
-    });
-  })
-  .catch(err => console.error('Hiba a blog betöltésekor:', err));
+// --- Blogposzt hozzáadása adminnak ---
+addPostBtn.onclick = async () => {
+  const title = titleInput.value.trim();
+  const content = contentInput.value.trim();
+
+  if (!title || !content) {
+    alert("Adj meg címet és tartalmat!");
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    alert("Nincs bejelentkezve!");
+    return;
+  }
+
+  const userDoc = await db.collection("users").doc(user.email).get();
+  if (!userDoc.exists || userDoc.data().role !== "admin") {
+    alert("Nincs jogosultságod bejegyzést létrehozni!");
+    return;
+  }
+
+  await db.collection("blogPosts").add({
+    title,
+    content,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  });
+
+  titleInput.value = "";
+  contentInput.value = "";
+};
+
+// --- Blogposztok megjelenítése ---
+db.collection("blogPosts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
+  blogContainer.innerHTML = "";
+
+  snapshot.forEach(doc => {
+    const d = doc.data();
+    const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
+
+    let postHTML = `
+      <div class="blogPost">
+        <div class="postDate">${date}</div>
+        <div class="postTitle"><strong>${d.title}</strong></div>
+        <div class="postContent">${d.content}</div>
+      </div>
+    `;
+
+    blogContainer.innerHTML += postHTML;
+  });
+});
