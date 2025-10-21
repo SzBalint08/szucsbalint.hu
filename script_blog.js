@@ -6,7 +6,7 @@ function myFunction() {
 
 // Firebase config
 const firebaseConfig = {
-  apiKey: "ÚJ_API_KEY",
+  apiKey: "AIzaSyC5PGp0CIL-NGzv0bh3EEfdr4JjHjBp4FE",
   authDomain: "szucsbalinthu.firebaseapp.com",
   projectId: "szucsbalinthu",
   storageBucket: "szucsbalinthu.firebasestorage.app",
