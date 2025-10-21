@@ -1,16 +1,12 @@
-// --- Mobilmenü ---
 function myFunction() {
   var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
+  if (x.className === "topnav") x.className += " responsive";
+  else x.className = "topnav";
 }
 
-// --- Firebase inicializálás ---
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyC5PGp0CIL-NGzv0bh3EEfdr4JjHjBp4FE",
+  apiKey: "ÚJ_API_KEY",
   authDomain: "szucsbalinthu.firebaseapp.com",
   projectId: "szucsbalinthu",
   storageBucket: "szucsbalinthu.firebasestorage.app",
@@ -23,74 +19,78 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// HTML elemek
 const adminPanel = document.getElementById("adminPanel");
-const titleInput = document.getElementById("title");
-const contentInput = document.getElementById("content");
+const newPost = document.getElementById("newPost");
+const langSelect = document.getElementById("langSelect");
 const addPostBtn = document.getElementById("addPostBtn");
 const blogContainer = document.getElementById("blogContainer");
 
-// --- Admin bejelentkezés kezelése role alapján ---
-auth.onAuthStateChanged(async user => {
+let currentRole = null;
+let currentUser = null;
+const currentLang = document.documentElement.lang || "hu";
+
+// --- Bejelentkezés figyelése ---
+auth.onAuthStateChanged(async (user) => {
+  currentUser = user;
   if (user) {
+    // Lekérdezzük a role-t
     const userDoc = await db.collection("users").doc(user.email).get();
-    if (userDoc.exists && userDoc.data().role === "admin") {
-      adminPanel.style.display = "block";
-    } else {
-      adminPanel.style.display = "none";
-    }
+    currentRole = userDoc.exists ? userDoc.data().role : "member";
+
+    if (currentRole === "admin") adminPanel.style.display = "block";
+    else adminPanel.style.display = "none";
   } else {
     adminPanel.style.display = "none";
+    currentRole = null;
   }
+
+  loadPosts();
 });
 
-// --- Blogposzt hozzáadása adminnak ---
+// --- Új bejegyzés hozzáadása ---
 addPostBtn.onclick = async () => {
-  const title = titleInput.value.trim();
-  const content = contentInput.value.trim();
-
-  if (!title || !content) {
-    alert("Adj meg címet és tartalmat!");
-    return;
-  }
-
-  const user = auth.currentUser;
-  if (!user) {
-    alert("Nincs bejelentkezve!");
-    return;
-  }
-
-  const userDoc = await db.collection("users").doc(user.email).get();
-  if (!userDoc.exists || userDoc.data().role !== "admin") {
-    alert("Nincs jogosultságod bejegyzést létrehozni!");
-    return;
-  }
+  const text = newPost.value.trim();
+  if (!text || !currentUser || currentRole !== "admin") return;
 
   await db.collection("blogPosts").add({
-    title,
-    content,
+    text,
+    author: currentUser.email,
+    lang: langSelect.value,
     createdAt: firebase.firestore.FieldValue.serverTimestamp()
   });
 
-  titleInput.value = "";
-  contentInput.value = "";
+  newPost.value = "";
 };
 
-// --- Blogposztok megjelenítése ---
-db.collection("blogPosts").orderBy("createdAt", "desc").onSnapshot(snapshot => {
-  blogContainer.innerHTML = "";
+// --- Blog posztok betöltése ---
+function loadPosts() {
+  db.collection("blogPosts")
+    .where("lang", "==", currentLang)
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snapshot => {
+      blogContainer.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
+        const div = document.createElement("div");
+        div.className = "blogPost";
+        div.innerHTML = `
+          <div class="postDate">${d.author} – ${date}</div>
+          <div class="postContent">${d.text}</div>
+        `;
 
-  snapshot.forEach(doc => {
-    const d = doc.data();
-    const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
+        // Admin törlés gomb
+        if (currentRole === "admin") {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "Törlés";
+          delBtn.onclick = async () => {
+            await db.collection("blogPosts").doc(doc.id).delete();
+          };
+          div.appendChild(delBtn);
+        }
 
-    let postHTML = `
-      <div class="blogPost">
-        <div class="postDate">${date}</div>
-        <div class="postTitle"><strong>${d.title}</strong></div>
-        <div class="postContent">${d.content}</div>
-      </div>
-    `;
-
-    blogContainer.innerHTML += postHTML;
-  });
-});
+        blogContainer.appendChild(div);
+      });
+    });
+}
