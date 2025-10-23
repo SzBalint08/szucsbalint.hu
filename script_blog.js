@@ -1,10 +1,10 @@
 function myFunction() {
-  var x = document.getElementById("myTopnav");
+  const x = document.getElementById("myTopnav");
   if (x.className === "topnav") x.className += " responsive";
   else x.className = "topnav";
 }
 
-// Firebase config
+// --- Firebase config ---
 const firebaseConfig = {
   apiKey: "AIzaSyC5PGp0CIL-NGzv0bh3EEfdr4JjHjBp4FE",
   authDomain: "szucsbalinthu.firebaseapp.com",
@@ -19,7 +19,6 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// HTML elemek
 const adminPanel = document.getElementById("adminPanel");
 const newPost = document.getElementById("newPost");
 const langSelect = document.getElementById("langSelect");
@@ -30,13 +29,12 @@ let currentRole = null;
 let currentUser = null;
 const currentLang = document.documentElement.lang || "hu";
 
-// --- Bejelentkezés figyelése ---
+// --- Auth figyelése ---
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
   if (user) {
-    // Lekérdezzük a role-t
     const userDoc = await db.collection("users").doc(user.email).get();
-    currentRole = userDoc.exists ? userDoc.data().role : "member";
+    currentRole = userDoc.exists ? userDoc.data().role : "pleb";
 
     if (currentRole === "admin") adminPanel.style.display = "block";
     else adminPanel.style.display = "none";
@@ -48,7 +46,7 @@ auth.onAuthStateChanged(async (user) => {
   loadPosts();
 });
 
-// --- Új bejegyzés hozzáadása ---
+// --- Új bejegyzés ---
 addPostBtn.onclick = async () => {
   const text = newPost.value.trim();
   if (!text || !currentUser || currentRole !== "admin") return;
@@ -63,7 +61,7 @@ addPostBtn.onclick = async () => {
   newPost.value = "";
 };
 
-// --- Blog posztok betöltése ---
+// --- Posztok betöltése ---
 function loadPosts() {
   db.collection("blogPosts")
     .where("lang", "==", currentLang)
@@ -72,15 +70,17 @@ function loadPosts() {
       blogContainer.innerHTML = "";
       snapshot.forEach(doc => {
         const d = doc.data();
-        const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString() : "";
+        const date = d.createdAt
+          ? new Date(d.createdAt.seconds * 1000).toLocaleDateString("hu-HU")
+          : "";
+
         const div = document.createElement("div");
         div.className = "blogPost";
         div.innerHTML = `
-          <div class="postDate">${d.author} – ${date}</div>
+          <div class="postDate">${date}</div>
           <div class="postContent">${d.text}</div>
         `;
 
-        // Admin törlés gomb
         if (currentRole === "admin") {
           const delBtn = document.createElement("button");
           delBtn.textContent = "Törlés";

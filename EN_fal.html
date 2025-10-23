@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Közösségi Fal</title>
+    <link rel="stylesheet" href="styles_default.css" />
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script defer src="script_EN_fal.js"></script>
+  </head>
+
+  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <div class="topnav" id="myTopnav">
+        <a href="#home" class="active">Home</a>
+        <a href="EN_blog.html">Blog</a>
+        <a href="EN_contact.html">Contact</a>
+        <a href="EN_games.html">Games</a>
+        <a href="EN_fal.html">Wall</a>
+        <a href="EN_majom.html">Patrik</a>
+        <a class="flags" href="index.html"><img src="https://flagicons.lipis.dev/flags/4x3/hu.svg"></a> 
+        <a class="flags" href="DK_index.html"><img src="https://flagicons.lipis.dev/flags/4x3/dk.svg"></a>   
+        <a href="javascript:void(0);" class="icon" onclick="myFunction()"><i class="fa fa-bars"></i></a>
+      </div>
+
+    <h1 class="title">Social Wall</h1>
+
+    <div id="falContainer">
+      <!-- Bejelentkezés gomb -->
+      <button id="toggleLoginBtn">Sign in</button>
+
+      <!-- Bejelentkezési/regisztrációs panel -->
+      <div id="authPanel" style="display:none;">
+        <input id="email" type="email" placeholder="Email" />
+        <input id="password" type="password" placeholder="Jelszó" />
+        <input id="username" placeholder="Felhasználónév (regisztrációkor)" style="display:none;" />
+        <button id="loginBtn">Bejelentkezés</button>
+        <button id="registerToggleBtn">Regisztráció</button>
+      </div>
+
+      <!-- Kijelentkezés -->
+      <button id="logoutBtn" style="display:none;">Kijelentkezés</button>
+
+      <!-- Posztolás -->
+      <div id="postPanel" style="display:none;">
+        <textarea id="message" rows="4" placeholder="Írj egy bejegyzést..."></textarea>
+        <button id="postBtn">Küldés</button>
+      </div>
+
+      <!-- Bejegyzések -->
+      <h2>Bejegyzések</h2>
+      <div id="postsContainer"></div>
+    </div>
+  </body>
+</html>
