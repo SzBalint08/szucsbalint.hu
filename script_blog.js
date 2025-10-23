@@ -29,6 +29,23 @@ let currentRole = null;
 let currentUser = null;
 const currentLang = document.documentElement.lang || "hu";
 
+// --- DeepL fordító függvény ---
+async function translateText(text, targetLang) {
+  const res = await fetch("https://api-free.deepl.com/v2/translate", {
+    method: "POST",
+    headers: {
+      "Authorization": "DeepL-Auth-Key 81be3354-5798-4122-b0a3-e4582b4a2e1c:fx", // ide jön a kulcs
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      text: text,
+      target_lang: targetLang
+    })
+  });
+  const data = await res.json();
+  return data.translations[0].text;
+}
+
 // --- Auth figyelése ---
 auth.onAuthStateChanged(async (user) => {
   currentUser = user;
@@ -43,28 +60,44 @@ auth.onAuthStateChanged(async (user) => {
     currentRole = null;
   }
 
-  loadPosts();
+  // Oldal betöltése a nyelvtől függően
+  if (currentLang === "hu") loadPosts();
+  else if (currentLang === "en") loadTranslatedPosts('en');
+  else if (currentLang === "dk") loadTranslatedPosts('dk');
 });
 
-// --- Új bejegyzés ---
+// --- Új HU bejegyzés létrehozása + DeepL fordítás ---
 addPostBtn.onclick = async () => {
   const text = newPost.value.trim();
   if (!text || !currentUser || currentRole !== "admin") return;
 
-  await db.collection("blogPosts").add({
+  // Magyar poszt létrehozása
+  const postRef = await db.collection("blogPosts").add({
     text,
     author: currentUser.email,
-    lang: langSelect.value,
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    lang: "hu",
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    translations: {}
+  });
+
+  // DeepL fordítások EN és DK nyelvre
+  const enText = await translateText(text, "EN");
+  const dkText = await translateText(text, "DA");
+
+  await postRef.update({
+    translations: {
+      en: { text: enText, editable: true },
+      dk: { text: dkText, editable: true }
+    }
   });
 
   newPost.value = "";
 };
 
-// --- Posztok betöltése ---
+// --- HU posztok betöltése ---
 function loadPosts() {
   db.collection("blogPosts")
-    .where("lang", "==", currentLang)
+    .where("lang", "==", "hu")
     .orderBy("createdAt", "desc")
     .onSnapshot(snapshot => {
       blogContainer.innerHTML = "";
@@ -88,6 +121,44 @@ function loadPosts() {
             await db.collection("blogPosts").doc(doc.id).delete();
           };
           div.appendChild(delBtn);
+        }
+
+        blogContainer.appendChild(div);
+      });
+    });
+}
+
+// --- EN / DK fordított posztok betöltése ---
+function loadTranslatedPosts(lang) {
+  db.collection("blogPosts")
+    .orderBy("createdAt", "desc")
+    .onSnapshot(snapshot => {
+      blogContainer.innerHTML = "";
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        if (!d.translations || !d.translations[lang]) return;
+
+        const div = document.createElement("div");
+        div.className = "blogPost";
+
+        div.innerHTML = `
+          <div class="postDate">${d.createdAt ? new Date(d.createdAt.seconds*1000).toLocaleDateString(lang) : ""}</div>
+          <div class="postContent">${d.translations[lang].text}</div>
+        `;
+
+        // Admin szerkesztés
+        if (currentRole === "admin" && d.translations[lang].editable) {
+          const editBtn = document.createElement("button");
+          editBtn.textContent = "Szerkesztés";
+          editBtn.onclick = async () => {
+            const newText = prompt("Szerkeszd a posztot:", d.translations[lang].text);
+            if (newText) {
+              const update = {};
+              update[`translations.${lang}.text`] = newText;
+              await db.collection("blogPosts").doc(doc.id).update(update);
+            }
+          };
+          div.appendChild(editBtn);
         }
 
         blogContainer.appendChild(div);
