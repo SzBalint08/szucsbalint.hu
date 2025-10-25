@@ -53,36 +53,6 @@
         <button id="postBtn">Küldés</button>
       </div>
 
-      <button id="translateBtn">Fordítás angolra</button>
-
-<script>
-// --- Bejegyzések DOM fordítása ---
-const translateBtn = document.getElementById("translateBtn");
-let translated = false;
-
-translateBtn.onclick = async () => {
-  const posts = document.querySelectorAll(".postContent");
-  if (!translated) {
-    for (const post of posts) {
-      // Google Translate web oldalán keresztüli “hack”: gyors fetch a fordításhoz
-      const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=hu&tl=en&dt=t&q=${encodeURIComponent(post.textContent)}`);
-      const data = await res.json();
-      post.dataset.original = post.textContent; // Eredeti szöveg mentése
-      post.textContent = data[0].map(item => item[0]).join('');
-    }
-    translated = true;
-    translateBtn.textContent = "Eredeti megjelenítése";
-  } else {
-    for (const post of posts) {
-      post.textContent = post.dataset.original || post.textContent;
-    }
-    translated = false;
-    translateBtn.textContent = "Fordítás angolra";
-  }
-};
-</script>
-
-
       <!-- Bejegyzések -->
       <h2>Bejegyzések</h2>
       <div id="postsContainer"></div>

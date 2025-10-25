@@ -68,9 +68,9 @@ loginBtn.onclick = async () => {
       await db.collection("users").doc(userCredential.user.email).set({
         username: username.value || email.value.split("@")[0],
         email: email.value,
-        role: "pleb" // 👈 alapértelmezett szerep mostantól pleb
+        role: "pleb"
       });
-      alert("Sikeres regisztráció! (Jelenleg pleb szerepköröd van.)");
+      alert("Sikeres regisztráció!");
     } else {
       await auth.signInWithEmailAndPassword(email.value, password.value);
     }
@@ -84,6 +84,10 @@ logoutBtn.onclick = () => auth.signOut();
 
 // --- Auth állapot figyelése ---
 auth.onAuthStateChanged(async (user) => {
+  const disclaimerId = "plebDisclaimer";
+  let disclaimer = document.getElementById(disclaimerId);
+  const topnav = document.querySelector(".topnav");
+
   if (user) {
     const userDoc = await db.collection("users").doc(user.email).get();
     const role = userDoc.exists ? userDoc.data().role : "pleb";
@@ -92,18 +96,42 @@ auth.onAuthStateChanged(async (user) => {
     toggleLoginBtn.style.display = "none";
     logoutBtn.style.display = "block";
 
-    // Csak member és admin írhat
+    // --- Pleb szerep figyelmeztetés ---
+    if (role === "pleb") {
+      if (!disclaimer) {
+        disclaimer = document.createElement("div");
+        disclaimer.id = disclaimerId;
+        disclaimer.textContent = "Nincs jogosultságod posztolni. Ha szeretnél írni küldj emailt: szucsbalint@szucsbalint.hu";
+        disclaimer.style.background = "#fff4cc";
+        disclaimer.style.color = "#444";
+        disclaimer.style.borderBottom = "1px solid #ddd";
+        disclaimer.style.padding = "10px";
+        disclaimer.style.textAlign = "center";
+        disclaimer.style.fontSize = "0.9rem";
+        disclaimer.style.fontFamily = "sans-serif";
+        disclaimer.style.zIndex = "500";
+        // beszúrás a topnav alá
+        topnav.insertAdjacentElement("afterend", disclaimer);
+      }
+    } else {
+      if (disclaimer) disclaimer.remove();
+    }
+
+    // --- Posztpanel megjelenítés jogosultság szerint ---
     if (role === "member" || role === "admin") {
       postPanel.style.display = "block";
     } else {
       postPanel.style.display = "none";
     }
+
   } else {
     logoutBtn.style.display = "none";
     toggleLoginBtn.style.display = "block";
     postPanel.style.display = "none";
+    if (disclaimer) disclaimer.remove();
   }
 });
+
 
 // --- Posztolás ---
 postBtn.onclick = async () => {
@@ -117,16 +145,10 @@ postBtn.onclick = async () => {
   }
 
   const userDoc = await db.collection("users").doc(user.email).get();
-  if (!userDoc.exists) {
-    alert("Felhasználói adatok nem találhatók!");
-    return;
-  }
-
   const userData = userDoc.data();
   const role = userData.role || "pleb";
   const authorName = userData.username || user.email.split("@")[0];
 
-  // Csak member és admin írhat
   if (role !== "member" && role !== "admin") {
     alert("Nincs jogosultságod írni a falra.");
     return;
@@ -146,6 +168,55 @@ postBtn.onclick = async () => {
   }
 };
 
+// --- Nyelvdetektálás és automatikus fordítás ---
+async function detectAndTranslate(postElement, targetLang) {
+  const text = postElement.textContent.trim();
+  if (!text) return;
+
+  try {
+    const detectRes = await fetch(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`
+    );
+    const data = await detectRes.json();
+
+    const detectedLang = data[2];
+    if (!detectedLang || detectedLang === targetLang) return;
+
+    const translatedText = data[0].map(item => item[0]).join('');
+
+    postElement.dataset.original = text;
+    postElement.dataset.translated = translatedText;
+    postElement.dataset.detected = detectedLang;
+    postElement.textContent = translatedText;
+
+    const info = document.createElement("div");
+    info.style.fontSize = "0.8rem";
+    info.style.color = "#666";
+    info.textContent = `(Automatikusan fordítva ${detectedLang.toUpperCase()} nyelvről)`;
+    
+    const toggleBtn = document.createElement("button");
+    toggleBtn.textContent = "Eredeti megjelenítése";
+    toggleBtn.classList.add("translateToggleBtn");
+
+    let showingOriginal = false;
+    toggleBtn.onclick = () => {
+      showingOriginal = !showingOriginal;
+      if (showingOriginal) {
+        postElement.textContent = postElement.dataset.original;
+        toggleBtn.textContent = "Fordítás megjelenítése";
+      } else {
+        postElement.textContent = postElement.dataset.translated;
+        toggleBtn.textContent = "Eredeti megjelenítése";
+      }
+    };
+
+    postElement.parentElement.appendChild(info);
+    postElement.parentElement.appendChild(toggleBtn);
+  } catch (err) {
+    console.error("Fordítás hiba:", err);
+  }
+}
+
 // --- Posztok megjelenítése valós időben ---
 db.collection("posts").orderBy("createdAt", "desc").onSnapshot(async snapshot => {
   postsContainer.innerHTML = "";
@@ -157,7 +228,9 @@ db.collection("posts").orderBy("createdAt", "desc").onSnapshot(async snapshot =>
     if (userDoc.exists) role = userDoc.data().role;
   }
 
-  snapshot.forEach(doc => {
+  const currentLang = document.documentElement.lang || "hu";
+
+  snapshot.forEach(async doc => {
     const d = doc.data();
     const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString("hu-HU") : "";
     let postHTML = `
@@ -173,6 +246,13 @@ db.collection("posts").orderBy("createdAt", "desc").onSnapshot(async snapshot =>
     postHTML += `</div>`;
     postsContainer.innerHTML += postHTML;
   });
+
+  // DOM betöltése után fordítás indítása
+  setTimeout(() => {
+    document.querySelectorAll(".postContent").forEach(post => {
+      detectAndTranslate(post, currentLang);
+    });
+  }, 500);
 
   // --- Törlés gomb ---
   document.querySelectorAll(".deleteBtn").forEach(btn => {
