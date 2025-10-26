@@ -5,7 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog</title>
     <link rel="stylesheet" href="styles_default.css" />
-    <script src="script_blog.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <script defer src="script_blog.js"></script>
   </head>
   <body>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -23,6 +26,10 @@
       </a>
     </div>
     <h1 class="title">Blog</h1>
-      <div id="blogContainer"></div>
+    <div id="blogContainer"></div>
+    <script>
+      // EN oldal: jelöljük a dokumentum nyelvét
+      document.documentElement.lang = 'dk';
+    </script>
   </body>
 </html>
