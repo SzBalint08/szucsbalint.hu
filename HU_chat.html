@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hu">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AI Chat</title>
+    <link rel="stylesheet" href="styles_default.css" />
+    <link rel="stylesheet" href="styles_chat.css" />
+    <script defer src="script_chat.js"></script>
+</head>
+<body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div class="topnav" id="myTopnav">
+      <a href="index.html">Kezdőlap</a>
+      <a href="HU_blog.html">Blog</a>
+      <a href="HU_contact.html">Kontakt</a>
+      <a href="HU_games.html">Játékok</a>
+      <a href="HU_fal.html">Fal</a>
+      <a href="#chat" class="active">Chat</a>
+      <a href="HU_majom.html">Patrik</a>
+      <a class="flags" href="EN_chat.html"><img src="https://flagicons.lipis.dev/flags/4x3/gb.svg"></a> 
+      <a class="flags" href="DK_chat.html"><img src="https://flagicons.lipis.dev/flags/4x3/dk.svg"></a>   
+      <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+          <i class="fa fa-bars"></i>
+      </a>
+    </div>
+
+    <main style="padding:1rem;">
+    <h1 class="title">Bálint AI</h1>
+
+    <section id="chatBox">
+        <div id="chatContainer">
+        <div id="messages" aria-live="polite"></div>
+
+        <form id="chatForm" autocomplete="off">
+            <input id="inputMsg" type="text" placeholder="Írj valamit..." />
+            <button id="sendBtn" type="submit">Küldés</button>
+            </form>
+        </div>
+    </section>
+</main>
+</body>
+</html>

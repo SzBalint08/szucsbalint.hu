@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaTeX Szerkesztő</title>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/stex/stex.min.js"></script>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- latex.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/latex.js/dist/latex.min.js"></script>
+
+  <!-- html2canvas + jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <link rel="stylesheet" href="styles_default.css" />
+  <style>
+    .latex-container { max-width:1200px; margin:1rem auto; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .panel { background:#fff; padding:1rem; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+    .projects { display:flex; flex-direction:column; gap:0.5rem; }
+    .project-item { display:flex; justify-content:space-between; align-items:center; padding:0.5rem; border-radius:6px; background:#f7fbff; border:1px solid #e6f0fb; }
+    .editor { height: calc(70vh - 80px); }
+    .controls { display:flex; gap:0.5rem; margin-bottom:0.5rem; flex-wrap:wrap; }
+    .btn { background:#1976d2; color:white; border:none; padding:8px 12px; border-radius:6px; cursor:pointer; font-weight:600; }
+    .btn.ghost { background:transparent; color:#1976d2; border:1px solid #1976d2; }
+    .iframePreview { width:100%; height:60vh; border:1px solid #ddd; border-radius:8px; }
+    @media (max-width:900px) { .latex-container { grid-template-columns:1fr; } .iframePreview{height:40vh;} }
+    .toggle-btn { font-size:0.85rem; cursor:pointer; color:#1976d2; text-decoration:underline; background:none;border:none;padding:0;}
+  </style>
+</head>
+<body>
+
+  <h1>LaTeX szerkesztő</h1>
+
+  <div class="latex-container">
+
+    <!-- Bal panel: projektek + editor -->
+    <div class="panel">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>Dokumentumok</strong>
+        <button class="toggle-btn" id="toggleProjects">Összecsukás</button>
+      </div>
+
+      <div class="projects" id="projectsList"></div>
+
+      <div class="controls" style="margin-top:0.5rem;">
+        <input id="docTitle" placeholder="Dokumentum cím" style="flex:1; padding:0.5rem; border-radius:6px; border:1px solid #ddd;" />
+        <button id="newProjBtn" class="btn">Új dokumentum</button>
+        <button id="saveBtn" class="btn ghost">Mentés</button>
+        <button id="compileBtn" class="btn">Compile</button>
+        <button id="pdfBtn" class="btn">PDF export</button>
+      </div>
+
+      <input id="inviteEmail" placeholder="Szerkesztő e-mail" style="flex:1; padding:0.5rem; border-radius:6px; border:1px solid #ddd; margin-top:0.5rem;" />
+      <button id="inviteBtn" class="btn" style="margin-top:0.5rem;">Meghívás</button>
+
+      <div id="collabs" style="font-size:0.9rem; color:#444; margin-top:0.5rem;"></div>
+
+      <label style="font-weight:600;">Editor</label>
+      <textarea id="editor" class="editor"></textarea>
+    </div>
+
+    <!-- Jobb panel: preview + log -->
+    <div class="panel">
+      <strong>Preview</strong>
+      <div id="latex-preview" style="margin-top:0.5rem; border:1px solid #ddd; padding:0.5rem; height:60vh; overflow:auto;"></div>
+      <div id="compileLog" style="margin-top:0.5rem; font-family:monospace; font-size:0.85rem; color:#333; background:#fafafa; padding:0.5rem; border-radius:6px; border:1px solid #eee; height:20vh; overflow:auto;">
+        Logok és visszajelzések...
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script_HU_latex.js"></script>
+</body>
+</html>
